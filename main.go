@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/go-rod/rod"
@@ -22,9 +23,19 @@ type CheckList struct {
 
 func main() {
 
-	err := godotenv.Load(".env")
+	// load env files
+	ex, err := os.Executable()
 	if err != nil {
-		log.Fatal("Error loading .env file: ", err)
+		panic(err)
+	}
+	exPath := filepath.Dir(ex)
+
+	err = godotenv.Load(".env")
+	if err != nil {
+		err = godotenv.Load(exPath + "/.env")
+		if err != nil {
+			log.Fatal("Error loading .env file: ", err)
+		}
 	}
 
 	var checkList CheckList
